@@ -11,6 +11,9 @@ public class Game {
 	private State state;
 	private Integer number;
 	private Integer manual_steps = 0;
+	private Integer failRound = 0;
+	private Integer prevScore = 0;
+	private boolean goBack = false;
 	ArrayList<Point> bonusPoint = new ArrayList<Point>(); 
 	public Game(){
 		
@@ -95,20 +98,21 @@ public class Game {
 								Logger.log("score " +  score);
 								//return new Move(i, rot, newP.getX(), newP.getY());
 							}
-							List<Point> pointSet=blocks.get(i).getOffsets();
-							int farestLittleBlock=0;
-				              int farestDistance=0;
-				              for(int ithLittleBlock=0;ithLittleBlock<pointSet.size();ithLittleBlock++){
-				                if(pointSet.get(ithLittleBlock).distance(corner)>farestDistance){
-				                  farestLittleBlock=ithLittleBlock;
-				                  farestDistance=pointSet.get(ithLittleBlock).distance(corner);
-				                }
-				              }
-							score += farestDistance;
 							
 							
-							score -= newP.distance(middlePoint);//find the point that's closest to middle point
-							score += newP.distance(corner);//find the point that's farest from corner point
+							
+							if (!goBack) {
+								score -= newP.distance(middlePoint);//find the point that's closest to middle point
+								score += newP.distance(corner);//find the point that's farest from corner point
+								List<Point> pointSet=blocks.get(i).getOffsets();
+								int farestDistance=0;
+								for(int ithLittleBlock=0;ithLittleBlock<pointSet.size();ithLittleBlock++){
+								   if(pointSet.get(ithLittleBlock).add(newP).distance(corner)>farestDistance){
+								      farestDistance=pointSet.get(ithLittleBlock).distance(corner);
+								   }
+								}
+								score += farestDistance;
+							}
 							score += blocks.get(i).getOffsets().size()*5;//use the biggest size blocks
 							
 							if (score > maxScore) {
@@ -122,6 +126,16 @@ public class Game {
 				}
 			}
 		}
+		if (maxScore < prevScore) {
+			failRound++;
+			if (failRound >= 5) {
+				//goBack = true;
+				Logger.log("Going back!");
+			}
+		} else {
+			failRound = 0;
+		}
+		prevScore = maxScore;
 		// if(!p.equals(new Point(0,0))){
 	//	Logger.log("postion:" + p.getX() + " " + p.getY() );
 		return new Move(ithBlock, newRot, p.getX(), p.getY());
