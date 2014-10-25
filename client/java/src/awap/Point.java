@@ -21,9 +21,17 @@ public class Point {
 	}
 
 	public boolean equals(Point p) {
+	//	Logger.log(x + " "+ y);
+		if (p.x == 10 && p.y == 2){
+			Logger.log("compare :" + this.x + " " + this.y );
+		}
 		return x == p.x && y == p.y;
+		
 	}
-
+    public int hashcode(){
+    	//Logger.log(x + " "+ y);
+    	return x+y+y/x;
+    }
 	public Point rotate(int numRotations) {
 		switch (numRotations) {
 		case 1:
@@ -48,4 +56,5 @@ public class Point {
 	public int getY() {
 		return y;
 	}
+
 }

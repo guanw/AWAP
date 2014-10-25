@@ -1,6 +1,8 @@
 package awap;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import com.google.common.base.Optional;
@@ -8,7 +10,20 @@ import com.google.common.base.Optional;
 public class Game {
 	private State state;
 	private Integer number;
-
+	private Integer manual_steps = 0;
+	ArrayList<Point> bonusPoint = new ArrayList<Point>(); 
+	public Game(){
+		
+		bonusPoint.add(new Point(2,9));
+		bonusPoint.add(new Point(7,7)); 
+		bonusPoint.add(new Point(10,2)); 
+		bonusPoint.add(new Point(12,7)); 
+		bonusPoint.add(new Point(17,10)); 
+		bonusPoint.add(new Point(7,12)); 
+		bonusPoint.add(new Point(12,12)); 
+		bonusPoint.add(new Point(9,17)); 
+	//Logger.log("length " + bonusPoint.size());
+	}
 	public Optional<Move> updateState(State newState) {
 		if (newState.getError().isPresent()) {
 			Logger.log(newState.getError().get());
@@ -26,11 +41,37 @@ public class Game {
 
 		return Optional.absent();
 	}
-
+	
+	private void manual_step(){
+		
+		switch (number){
+		case 1:break;
+		case 2:break;
+		case 3:break;
+		case 4:break;
+		}
+	}
+	
+	private boolean bonusCheck( Block block, Point p){
+		//int N = state.getDimension();
+		for (Point offset : block.getOffsets()) {
+			Point q = offset.add(p);
+			int x = q.getX(), y = q.getY();
+			if (p.getX() == 11 && p.getY()==2){
+				Logger.log("xy" +x + " " + y);
+			}
+			for (Point pa : bonusPoint){
+			if (pa.getX() == q.getX() && pa.getY() == q.getY())
+			   return true;
+			}
+		}
+		return false;
+	}
 	private Move findMove() {
 		int N = state.getDimension();
 		List<Block> blocks = state.getBlocks().get(number);
 		// List<Point> choices=new ArrayList<Point>();
+		Collections.sort(blocks);
 		int newRot = 0;
 		int ithBlock = 0;
 		Point p = new Point(0, 0);
@@ -46,9 +87,16 @@ public class Game {
 					for (int i = 0; i < blocks.size(); i++) {
 						Point newP = new Point(x, y);
 						if (canPlace(blocks.get(i).rotate(rot), new Point(x, y))) {
+							
 							int score = baseScore;
 							score -= newP.distance(middlePoint);
 							score += newP.distance(corner);
+							if (bonusCheck(blocks.get(i).rotate(rot), new Point(x, y))){
+								//Logger.log(x +" " + y);
+								score += blocks.get(i).getOffsets().size() * 20;
+								Logger.log("score " +  score);
+								//return new Move(i, rot, newP.getX(), newP.getY());
+							}
 							if (score > maxScore) {
 								p = newP;
 								newRot = rot;
@@ -61,6 +109,7 @@ public class Game {
 			}
 		}
 		// if(!p.equals(new Point(0,0))){
+	//	Logger.log("postion:" + p.getX() + " " + p.getY() );
 		return new Move(ithBlock, newRot, p.getX(), p.getY());
 		// }
 		// return new Move(0, 0, 0, 0);

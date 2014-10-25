@@ -6,7 +6,7 @@ import java.util.Map;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class Block {
+public class Block implements Comparable<Block>{
 	private List<Point> offsets;
 
 	public Block() {
@@ -42,5 +42,15 @@ public class Block {
 		}));
 
 		return block;
+	}
+
+	@Override
+	public int compareTo(Block o) {
+		if (this.offsets.size() > o.offsets.size())
+			return 1;
+		else if (this.offsets.size() > o.offsets.size())
+			return -1;
+		else
+		return 0;
 	}
 }
