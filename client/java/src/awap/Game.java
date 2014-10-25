@@ -89,14 +89,28 @@ public class Game {
 						if (canPlace(blocks.get(i).rotate(rot), new Point(x, y))) {
 							
 							int score = baseScore;
-							score -= newP.distance(middlePoint);
-							score += newP.distance(corner);
 							if (bonusCheck(blocks.get(i).rotate(rot), new Point(x, y))){
 								//Logger.log(x +" " + y);
 								score += blocks.get(i).getOffsets().size() * 20;
 								Logger.log("score " +  score);
 								//return new Move(i, rot, newP.getX(), newP.getY());
 							}
+							List<Point> pointSet=blocks.get(i).getOffsets();
+							int farestLittleBlock=0;
+				              int farestDistance=0;
+				              for(int ithLittleBlock=0;ithLittleBlock<pointSet.size();ithLittleBlock++){
+				                if(pointSet.get(ithLittleBlock).distance(corner)>farestDistance){
+				                  farestLittleBlock=ithLittleBlock;
+				                  farestDistance=pointSet.get(ithLittleBlock).distance(corner);
+				                }
+				              }
+							score += farestDistance;
+							
+							
+							score -= newP.distance(middlePoint);//find the point that's closest to middle point
+							score += newP.distance(corner);//find the point that's farest from corner point
+							score += blocks.get(i).getOffsets().size()*5;//use the biggest size blocks
+							
 							if (score > maxScore) {
 								p = newP;
 								newRot = rot;
