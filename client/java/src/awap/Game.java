@@ -30,35 +30,40 @@ public class Game {
 	private Move findMove() {
 		int N = state.getDimension();
 		List<Block> blocks = state.getBlocks().get(number);
-		//List<Point> choices=new ArrayList<Point>();
-		int newRot=0;
-		int ithBlock=0;
-		Point p=new Point(0,0);
-		Point middlePoint=new Point(N/2,N/2);
+		// List<Point> choices=new ArrayList<Point>();
+		int newRot = 0;
+		int ithBlock = 0;
+		Point p = new Point(0, 0);
+		Point middlePoint = new Point(N / 2, N / 2);
+		int maxScore = 0;
+		int baseScore = 100;
+		Point[] corners = { new Point(0, 0), new Point(N, 0), new Point(N, N),
+				new Point(0, N) };
+		Point corner = corners[number];
 		for (int x = 0; x < N; x++) {
 			for (int y = 0; y < N; y++) {
 				for (int rot = 0; rot < 4; rot++) {
 					for (int i = 0; i < blocks.size(); i++) {
-					  
-					  Point newP=new Point(x,y);
+						Point newP = new Point(x, y);
 						if (canPlace(blocks.get(i).rotate(rot), new Point(x, y))) {
-							//return new Move(i, rot, x, y);
-							
-						  //Point middlePoint=new Point(N/2,N/2);
-						  if(newP.distance(middlePoint)<p.distance(middlePoint)){
-						    p=newP;
-						    newRot=rot;
-						    ithBlock=i;
-						  }
+							int score = baseScore;
+							score -= newP.distance(middlePoint);
+							score += newP.distance(corner);
+							if (score > maxScore) {
+								p = newP;
+								newRot = rot;
+								ithBlock = i;
+								maxScore = score;
+							}
 						}
 					}
 				}
 			}
 		}
-		//if(!p.equals(new Point(0,0))){
-		  return new Move(ithBlock,newRot,p.getX(),p.getY());
-		//}
-		//return new Move(0, 0, 0, 0);
+		// if(!p.equals(new Point(0,0))){
+		return new Move(ithBlock, newRot, p.getX(), p.getY());
+		// }
+		// return new Move(0, 0, 0, 0);
 	}
 
 	private int getPos(int x, int y) {
@@ -78,9 +83,8 @@ public class Game {
 			Point q = offset.add(p);
 			int x = q.getX(), y = q.getY();
 
-			if (x > N || x < 0 || y < 0 || y > N
-          || getPos(x, y) >= 0
-          || getPos(x, y) == -2
+			if (x > N || x < 0 || y < 0 || y > N || getPos(x, y) >= 0
+					|| getPos(x, y) == -2
 					|| (x > 0 && getPos(x - 1, y) == number)
 					|| (y > 0 && getPos(x, y - 1) == number)
 					|| (x < N && getPos(x + 1, y) == number)
