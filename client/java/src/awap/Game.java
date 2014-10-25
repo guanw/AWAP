@@ -49,6 +49,7 @@ public class Game {
 							int score = baseScore;
 							score -= newP.distance(middlePoint);
 							score += newP.distance(corner);
+							score += blocks.get(i).getOffsets().size()*2;
 							if (score > maxScore) {
 								p = newP;
 								newRot = rot;
